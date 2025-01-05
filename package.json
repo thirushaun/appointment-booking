@@ -1,0 +1,15 @@
+{
+  "name": "appointment-booking",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "nodemailer": "^6.9.16"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}

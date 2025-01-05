@@ -1,0 +1,24 @@
+{
+  "appointments": [
+    {
+      "name": "tter",
+      "email": "thirushaun74@yahoo.com",
+      "phone": "+60167051852",
+      "service": "Consultation",
+      "date": "2025-01-05",
+      "time": "14:01",
+      "status": "Done",
+      "id": 2
+    },
+    {
+      "name": "brucelee",
+      "email": "thirushaun74@yahoo.com",
+      "phone": "+60167051852",
+      "service": "Consultation",
+      "date": "2025-01-05",
+      "time": "13:40",
+      "status": "Pending",
+      "id": 3
+    }
+  ]
+}
