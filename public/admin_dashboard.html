@@ -7,29 +7,35 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <!-- Return Button (Links to index.html) -->
-    <a href="index.html" class="return-button">Return to Main Page</a>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <!-- Back Button -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button onclick="window.location.href='index.html'" style="background-color: #0072ff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Back to Appointment Page
+            </button>
+        </div>
 
-    <!-- Table to Display Data -->
-    <table id="data-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be populated here by JavaScript -->
-        </tbody>
-    </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="appointmentsBody">
+                <!-- Appointments will be loaded here -->
+            </tbody>
+        </table>
+    </div>
 
-    <!-- JavaScript to Fetch and Display Data -->
-    <script src="script.js"></script>
+    <!-- Load admin_dashboard.js -->
+    <script src="admin_dashboard.js"></script>
 </body>
 </html>
