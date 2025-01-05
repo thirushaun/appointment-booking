@@ -1,12 +1,16 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const path = require('path'); // Add this line
 const app = express();
 const port = process.env.PORT || 5000; // Use Heroku's port or default to 5000
 
 // Middleware
 app.use(express.json()); // Parse JSON request bodies
 app.use(cors()); // Enable CORS for all routes
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public'))); // Add this line
 
 // Configure Nodemailer for Yahoo
 const transporter = nodemailer.createTransport({
@@ -45,7 +49,7 @@ app.post('/send-email', async (req, res) => {
 
 // Default route
 app.get('/', (req, res) => {
-    res.send('Welcome to the Appointment Booking API!');
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Update this line
 });
 
 // Start the server
