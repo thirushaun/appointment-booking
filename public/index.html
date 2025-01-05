@@ -3,12 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <title>Main Page - Appointment System</title>
+    <!-- Link to the stylesheet -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Optional: Add a favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <h1>Welcome to the Main Page</h1>
-    <!-- Button to Navigate to Admin Dashboard -->
-    <a href="admin_dashboard.html" class="return-button">Go to Admin Dashboard</a>
+    <!-- Header Section -->
+    <header>
+        <h1>Welcome to the Appointment System</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="admin_dashboard.html">Admin Dashboard</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+        <section id="welcome">
+            <h2>About Us</h2>
+            <p>Welcome to our appointment scheduling system. Manage your appointments efficiently with our easy-to-use platform.</p>
+            <a href="admin_dashboard.html" class="return-button">Go to Admin Dashboard</a>
+        </section>
+
+        <section id="services">
+            <h2>Our Services</h2>
+            <ul>
+                <li>Appointment Scheduling</li>
+                <li>Customer Management</li>
+                <li>Real-Time Notifications</li>
+                <li>Reporting and Analytics</li>
+            </ul>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <p>If you have any questions, feel free to reach out to us:</p>
+            <p>Email: <a href="mailto:support@appointmentsystem.com">support@appointmentsystem.com</a></p>
+            <p>Phone: +60167051852</p>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2023 Appointment System. All rights reserved.</p>
+        <p>Follow us on <a href="https://www.facebook.com/bookyourappointment/" target="_blank">Facebook</a>.</p>
+    </footer>
 </body>
 </html>
