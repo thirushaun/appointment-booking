@@ -4,30 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- Correct path -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Service</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="appointmentsTable">
-                <!-- Appointments will be dynamically added here -->
-            </tbody>
-        </table>
-    </div>
+    <h1>Admin Dashboard</h1>
+    <!-- Return Button (Now links to index.html) -->
+    <a href="index.html" class="return-button">Return to Main Page</a>
 
-    <!-- Load script.js -->
-    <script src="/script.js"></script> <!-- Correct path -->
+    <!-- Table to Display Data -->
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here by JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- JavaScript to Fetch and Display Data -->
+    <script src="script.js"></script>
 </body>
 </html>
