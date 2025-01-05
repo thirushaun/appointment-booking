@@ -52,6 +52,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html')); // Update this line
 });
 
+// Route for admin dashboard
+app.get('/admin_dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin_dashboard.html')); // Add this line
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
