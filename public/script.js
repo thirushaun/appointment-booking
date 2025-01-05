@@ -1,10 +1,10 @@
-const API_URL = "https://fathomless-fjord-27109-0008bf58a580.herokuapp.com"; // Updated to Heroku app URL
+const API_URL = "http://localhost:5000"; // Backend URL
 
 // Password check for Admin Dashboard
 function checkPassword() {
     const password = prompt("Enter the password to access the Admin Dashboard:");
     if (password === "20061968") {
-        window.location.href = "/admin_dashboard.html"; // Correct path
+        window.location.href = "admin_dashboard.html"; // Redirect to Admin Dashboard
     } else {
         alert("Incorrect password. Access denied.");
     }
@@ -61,7 +61,7 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
     };
 
     try {
-        // Save appointment to JSON Server
+        // Save appointment to backend
         const response = await fetch(`${API_URL}/appointments`, {
             method: 'POST',
             headers: {
@@ -79,9 +79,10 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
             await sendEmail(email, patientSubject, patientText);
 
             // Send email to doctor
+            const doctorEmail = "thirushaun74@yahoo.com"; // Doctor's email
             const doctorSubject = `New Appointment - ${service}`;
             const doctorText = `You have a new appointment:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nDate: ${date}\nTime: ${time}`;
-            await sendEmail('thirushaun74@yahoo.com', doctorSubject, doctorText); // Doctor's email
+            await sendEmail(doctorEmail, doctorSubject, doctorText);
 
             // Clear the form
             document.getElementById('appointmentForm').reset();
