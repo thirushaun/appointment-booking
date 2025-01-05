@@ -16,8 +16,8 @@ app.use(express.static(path.join(__dirname, 'public'))); // Serve static files f
 const transporter = nodemailer.createTransport({
     service: 'yahoo',
     auth: {
-        user: process.env.YAHOO_EMAIL, // Load from environment variable
-        pass: process.env.YAHOO_APP_PASSWORD // Load from environment variable
+        user: process.env.YAHOO_EMAIL || 'thirushaun74@yahoo.com', // Use environment variable or fallback
+        pass: process.env.YAHOO_APP_PASSWORD || 'tnqcbjvhjvuieevs' // Use environment variable or fallback
     }
 });
 
@@ -31,7 +31,7 @@ app.post('/send-email', async (req, res) => {
     }
 
     const mailOptions = {
-        from: process.env.YAHOO_EMAIL, // Use environment variable for sender email
+        from: process.env.YAHOO_EMAIL || 'thirushaun74@yahoo.com', // Use environment variable or fallback
         to,
         subject,
         text
@@ -59,11 +59,12 @@ app.post('/appointments', (req, res) => {
             return res.status(500).send('Error reading database');
         }
 
-        const appointments = JSON.parse(data);
+        const appointments = JSON.parse(data).appointments;
+        appointmentData.id = appointments.length + 1; // Assign a unique ID
         appointments.push(appointmentData);
 
         // Write updated appointments to db.json
-        fs.writeFile(dbPath, JSON.stringify(appointments, null, 2), (err) => {
+        fs.writeFile(dbPath, JSON.stringify({ appointments }, null, 2), (err) => {
             if (err) {
                 console.error('Error writing to db.json:', err);
                 return res.status(500).send('Error saving appointment');
@@ -83,8 +84,71 @@ app.get('/appointments', (req, res) => {
             return res.status(500).send('Error reading database');
         }
 
-        const appointments = JSON.parse(data);
+        const appointments = JSON.parse(data).appointments;
         res.status(200).json(appointments);
+    });
+});
+
+// Endpoint to update appointment status
+app.patch('/appointments/:id', (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const dbPath = path.join(__dirname, 'db.json');
+    fs.readFile(dbPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading db.json:', err);
+            return res.status(500).send('Error reading database');
+        }
+
+        const { appointments } = JSON.parse(data);
+        const appointment = appointments.find(app => app.id === parseInt(id));
+
+        if (appointment) {
+            appointment.status = status;
+
+            fs.writeFile(dbPath, JSON.stringify({ appointments }, null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing to db.json:', err);
+                    return res.status(500).send('Error updating appointment');
+                }
+
+                res.status(200).send('Appointment updated successfully');
+            });
+        } else {
+            res.status(404).send('Appointment not found');
+        }
+    });
+});
+
+// Endpoint to delete an appointment
+app.delete('/appointments/:id', (req, res) => {
+    const { id } = req.params;
+
+    const dbPath = path.join(__dirname, 'db.json');
+    fs.readFile(dbPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading db.json:', err);
+            return res.status(500).send('Error reading database');
+        }
+
+        let { appointments } = JSON.parse(data);
+        const index = appointments.findIndex(app => app.id === parseInt(id));
+
+        if (index !== -1) {
+            appointments.splice(index, 1);
+
+            fs.writeFile(dbPath, JSON.stringify({ appointments }, null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing to db.json:', err);
+                    return res.status(500).send('Error deleting appointment');
+                }
+
+                res.status(200).send('Appointment deleted successfully');
+            });
+        } else {
+            res.status(404).send('Appointment not found');
+        }
     });
 });
 
