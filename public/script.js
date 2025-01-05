@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000"; // Backend URL
+const API_URL = "https://fathomless-fjord-27109-0008bF5a5580.herokuapp.com"; // Heroku app URL
 
 // Password check for Admin Dashboard
 function checkPassword() {
