@@ -4,7 +4,7 @@ const API_URL = "https://fathomless-fjord-27109-0008bf58a580.herokuapp.com"; // 
 function checkPassword() {
     const password = prompt("Enter the password to access the Admin Dashboard:");
     if (password === "20061968") {
-        window.location.href = "admin_dashboard.html"; // Redirect to Admin Dashboard
+        window.location.href = "/admin_dashboard.html"; // Correct path
     } else {
         alert("Incorrect password. Access denied.");
     }
