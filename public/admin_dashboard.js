@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5001"; // Update this to your backend URL (e.g., Heroku URL if deployed)
+const API_URL = ""; // Use relative URL for Heroku
 
 // Fetch all appointments
 async function fetchAppointments() {
@@ -24,7 +24,7 @@ async function fetchAppointments() {
                 <td>${appointment.status || "Pending"}</td>
                 <td>
                     <button onclick="markAsDone(${appointment.id})">Mark as Done</button>
-                    <button onclick="deleteAppointment(${appointment.id})" style="background-color: #ff4d4d; color: white;"><i class="fas fa-trash"></i></button>
+                    <button onclick="deleteAppointment(${appointment.id})">Delete</button>
                 </td>
             `;
 
