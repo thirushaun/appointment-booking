@@ -1,5 +1,32 @@
 const API_URL = ""; // Use relative URL for Heroku
 
+// Static list of Malaysian public holidays for 2025
+const publicHolidays = {
+    "2025": [
+        "2025-01-29", // Chinese New Year
+        "2025-01-30", // Chinese New Year Holiday
+        "2025-02-11", // Thaipusam
+        "2025-03-02", // Awal Ramadan
+        "2025-03-03", // Awal Ramadan Holiday
+        "2025-03-23", // Sultan of Johor's Birthday
+        "2025-03-24", // Sultan of Johor's Birthday Holiday
+        "2025-03-31", // Hari Raya Aidilfitri
+        "2025-04-01", // Hari Raya Aidilfitri Holiday
+        "2025-05-01", // Labour Day
+        "2025-05-12", // Wesak Day
+        "2025-06-02", // Agong's Birthday
+        "2025-06-07", // Hari Raya Haji
+        "2025-06-27", // Awal Muharram
+        "2025-07-31", // Hari Hol Almarhum Sultan Iskandar
+        "2025-08-31", // Merdeka Day
+        "2025-09-01", // Merdeka Day Holiday
+        "2025-09-05", // Prophet Muhammad's Birthday
+        "2025-09-16", // Malaysia Day
+        "2025-10-20", // Deepavali
+        "2025-12-25", // Christmas Day
+    ],
+};
+
 // Password check for Admin Dashboard
 function checkPassword() {
     const password = prompt("Enter the password to access the Admin Dashboard:");
@@ -51,6 +78,41 @@ function validatePhoneNumber(phone) {
         alert("Please enter a valid phone number with a country code (e.g., +60167051852).");
         return false;
     }
+    return true;
+}
+
+// Function to validate the selected date (must be within the next 3 months and not a public holiday)
+function validateDate(selectedDate) {
+    const today = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(today.getMonth() + 3);
+
+    const selectedDateObj = new Date(selectedDate);
+
+    // Check if the selected date is in the past
+    if (selectedDateObj < today) {
+        alert("Appointments cannot be booked for past dates. Please select a valid date.");
+        return false;
+    }
+
+    // Check if the selected date is more than 3 months ahead
+    if (selectedDateObj > threeMonthsLater) {
+        alert("For better scheduling, appointments can only be booked up to 3 months in advance. Please select a date within the next 3 months.");
+        return false;
+    }
+
+    // Format the selected date as YYYY-MM-DD
+    const formattedDate = selectedDateObj.toISOString().split('T')[0];
+
+    // Get the year of the selected date
+    const selectedYear = selectedDateObj.getFullYear().toString();
+
+    // Check if the selected date is a public holiday
+    if (publicHolidays[selectedYear] && publicHolidays[selectedYear].includes(formattedDate)) {
+        alert("Appointments are not available on public holidays. Please select another date.");
+        return false;
+    }
+
     return true;
 }
 
@@ -133,6 +195,11 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
     // Validate phone number
     if (!validatePhoneNumber(phone)) {
         return; // Stop if the phone number is invalid
+    }
+
+    // Validate the selected date
+    if (!validateDate(date)) {
+        return; // Stop if the date is invalid
     }
 
     // Create appointment data
