@@ -76,22 +76,24 @@ async function updateGraph() {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // Allow the chart to resize freely
                 plugins: {
                     tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                return `${context.label}: ${context.raw}`; // Display label and value in tooltip
-                            }
-                        }
+                        enabled: false // Disable tooltips since numbers are displayed inside the pie
                     },
                     datalabels: {
                         color: 'white', // Text color for labels inside the pie chart
+                        font: {
+                            size: 14, // Font size for the numbers
+                            weight: 'bold' // Make the numbers bold
+                        },
                         formatter: (value) => {
                             return value; // Display the count inside each pie section
                         }
                     }
                 }
-            }
+            },
+            plugins: [ChartDataLabels] // Add the datalabels plugin
         });
     } catch (error) {
         console.error("Error updating graph: ", error);
