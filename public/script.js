@@ -10,6 +10,73 @@ function checkPassword() {
     }
 }
 
+// Function to generate time slots (9:00 AM to 5:00 PM, 15-minute intervals)
+function generateTimeSlots(bookedSlots = []) {
+    const timeSlots = [];
+    const startTime = 9 * 60; // 9:00 AM in minutes
+    const endTime = 17 * 60; // 5:00 PM in minutes
+    const interval = 15; // 15-minute intervals
+
+    for (let minutes = startTime; minutes < endTime; minutes += interval) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        const timeString = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+
+        // Check if the time slot is already booked
+        const isBooked = bookedSlots.includes(timeString);
+
+        // Add the time slot to the dropdown
+        timeSlots.push(`<option value="${timeString}" ${isBooked ? 'disabled' : ''}>${timeString}</option>`);
+    }
+
+    return timeSlots.join('');
+}
+
+// Function to fetch booked time slots for a specific date
+async function fetchBookedSlots(date) {
+    try {
+        const response = await fetch(`${API_URL}/appointments?date=${date}`);
+        const appointments = await response.json();
+        return appointments.map(app => app.time); // Return array of booked times
+    } catch (error) {
+        console.error("Error fetching booked slots: ", error);
+        return [];
+    }
+}
+
+// Function to update time slots based on selected date
+async function updateTimeSlots() {
+    const dateInput = document.getElementById('date');
+    const timeSelect = document.getElementById('time');
+
+    const selectedDate = dateInput.value;
+
+    // Validate day of the week (Monday to Saturday)
+    const dateObj = new Date(selectedDate);
+    const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+    if (dayOfWeek === 0) { // Sunday
+        alert("Appointments are not available on Sundays. Please select another date.");
+        dateInput.value = ''; // Clear the date input
+        timeSelect.innerHTML = '<option value="">Select a valid date first</option>';
+        return;
+    }
+
+    // Fetch booked slots for the selected date
+    const bookedSlots = await fetchBookedSlots(selectedDate);
+
+    // Generate and populate time slots
+    timeSelect.innerHTML = generateTimeSlots(bookedSlots);
+}
+
+// Add event listener to date input
+document.getElementById('date').addEventListener('change', updateTimeSlots);
+
+// Initialize time slots when the page loads
+window.onload = () => {
+    updateTimeSlots();
+};
+
 // Function to send emails
 async function sendEmail(to, subject, text) {
     try {
@@ -87,6 +154,9 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
 
             // Clear the form
             document.getElementById('appointmentForm').reset();
+
+            // Update time slots after booking
+            updateTimeSlots();
         } else {
             const errorData = await response.json(); // Parse error response
             console.error("Failed to save appointment:", errorData);
