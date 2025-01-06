@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5001"; // JSON Server URL
+const API_URL = ""; // Use relative URL for Heroku
 
 // Password check for Admin Dashboard
 function checkPassword() {
