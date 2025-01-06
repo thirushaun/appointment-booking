@@ -32,70 +32,81 @@ async function fetchAppointments() {
         });
 
         // Render the graph with the default time period (weekly)
-        updateGraph(appointments);
+        updateGraph();
     } catch (error) {
         console.error("Error fetching appointments: ", error);
     }
 }
 
 // Update the graph based on the selected time period
-function updateGraph(appointments) {
-    const timePeriod = document.getElementById('timePeriod').value;
-    const processedData = processAppointmentsForGraph(appointments, timePeriod);
+async function updateGraph() {
+    try {
+        // Fetch appointments if not provided
+        const response = await fetch(`${API_URL}/appointments`);
+        const appointments = await response.json();
 
-    // Get the canvas element
-    const ctx = document.getElementById('weeklyStatsChart').getContext('2d');
+        // Get the selected time period
+        const timePeriod = document.getElementById('timePeriod').value;
 
-    // Destroy the existing chart if it exists
-    if (window.myChart) {
-        window.myChart.destroy();
-    }
+        // Process data for the graph
+        const processedData = processAppointmentsForGraph(appointments, timePeriod);
 
-    // Create the chart
-    window.myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: processedData.labels, // Time periods (e.g., weeks, months, years)
-            datasets: [
-                {
-                    label: 'Done',
-                    data: processedData.done,
-                    borderColor: 'green',
-                    fill: false
-                },
-                {
-                    label: 'Pending',
-                    data: processedData.pending,
-                    borderColor: 'orange',
-                    fill: false
-                },
-                {
-                    label: 'Deleted',
-                    data: processedData.deleted,
-                    borderColor: 'red',
-                    fill: false
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Number of Patients'
+        // Get the canvas element
+        const ctx = document.getElementById('weeklyStatsChart').getContext('2d');
+
+        // Destroy the existing chart if it exists
+        if (window.myChart) {
+            window.myChart.destroy();
+        }
+
+        // Create the chart
+        window.myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: processedData.labels, // Time periods (e.g., weeks, months, years)
+                datasets: [
+                    {
+                        label: 'Done',
+                        data: processedData.done,
+                        borderColor: 'green',
+                        fill: false
+                    },
+                    {
+                        label: 'Pending',
+                        data: processedData.pending,
+                        borderColor: 'orange',
+                        fill: false
+                    },
+                    {
+                        label: 'Deleted',
+                        data: processedData.deleted,
+                        borderColor: 'red',
+                        fill: false
                     }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: timePeriod === 'week' ? 'Weeks' : timePeriod === 'month' ? 'Months' : 'Years'
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Patients'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: timePeriod === 'week' ? 'Weeks' : timePeriod === 'month' ? 'Months' : 'Years'
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error("Error updating graph: ", error);
+    }
 }
 
 // Process appointments for the graph based on the selected time period
