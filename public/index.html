@@ -30,10 +30,12 @@
             <input type="date" id="date" required>
 
             <label for="time">Time</label>
-            <select id="time" required>
-                <!-- Time slots will be dynamically populated here -->
-                <option value="">Select a date first</option>
-            </select>
+            <div class="time-picker-container">
+                <select id="time" required size="5">
+                    <!-- Time slots will be dynamically populated here -->
+                    <option value="">Select a date first</option>
+                </select>
+            </div>
 
             <button type="submit">Book Appointment</button>
         </form>
