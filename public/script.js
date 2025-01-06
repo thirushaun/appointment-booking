@@ -44,6 +44,29 @@ async function fetchBookedSlots(date) {
     }
 }
 
+// Function to validate the selected date (must be within the next 3 months)
+function validateDate(selectedDate) {
+    const today = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(today.getMonth() + 3);
+
+    const selectedDateObj = new Date(selectedDate);
+
+    // Check if the selected date is in the past
+    if (selectedDateObj < today) {
+        alert("Appointments cannot be booked for past dates. Please select a valid date.");
+        return false;
+    }
+
+    // Check if the selected date is more than 3 months ahead
+    if (selectedDateObj > threeMonthsLater) {
+        alert("For better scheduling, appointments can only be booked up to 3 months in advance. Please select a date within the next 3 months.");
+        return false;
+    }
+
+    return true;
+}
+
 // Function to update time slots based on selected date
 async function updateTimeSlots() {
     const dateInput = document.getElementById('date');
@@ -114,6 +137,11 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
     if (!name || !email || !phone || !service || !date || !time) {
         alert("Please fill out all fields.");
         return;
+    }
+
+    // Validate the selected date
+    if (!validateDate(date)) {
+        return; // Stop if the date is invalid
     }
 
     // Create appointment data
