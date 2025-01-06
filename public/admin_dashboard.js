@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000"; // Update to Heroku URL in production
+const API_URL = "http://localhost:5001"; // JSON Server URL
 
 // Fetch all appointments
 async function fetchAppointments() {
@@ -23,8 +23,8 @@ async function fetchAppointments() {
                 <td>${appointment.time}</td>
                 <td>${appointment.status || "Pending"}</td>
                 <td>
-                    <button onclick="markAsDone('${appointment.id}')">Mark as Done</button>
-                    <button onclick="deleteAppointment('${appointment.id}')">Delete</button>
+                    <button onclick="markAsDone(${appointment.id})">Mark as Done</button>
+                    <button onclick="deleteAppointment(${appointment.id})">Delete</button>
                 </td>
             `;
 
