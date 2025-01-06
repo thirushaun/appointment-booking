@@ -44,26 +44,13 @@ async function fetchBookedSlots(date) {
     }
 }
 
-// Function to validate the selected date (must be within the next 3 months)
-function validateDate(selectedDate) {
-    const today = new Date();
-    const threeMonthsLater = new Date();
-    threeMonthsLater.setMonth(today.getMonth() + 3);
-
-    const selectedDateObj = new Date(selectedDate);
-
-    // Check if the selected date is in the past
-    if (selectedDateObj < today) {
-        alert("Appointments cannot be booked for past dates. Please select a valid date.");
+// Function to validate phone number (must include country code)
+function validatePhoneNumber(phone) {
+    const phoneRegex = /^\+\d{10,15}$/; // Example: +60167051852
+    if (!phoneRegex.test(phone)) {
+        alert("Please enter a valid phone number with a country code (e.g., +60167051852).");
         return false;
     }
-
-    // Check if the selected date is more than 3 months ahead
-    if (selectedDateObj > threeMonthsLater) {
-        alert("For better scheduling, appointments can only be booked up to 3 months in advance. Please select a date within the next 3 months.");
-        return false;
-    }
-
     return true;
 }
 
@@ -90,6 +77,10 @@ async function updateTimeSlots() {
 
     // Generate and populate time slots
     timeSelect.innerHTML = generateTimeSlots(bookedSlots);
+
+    // Debugging: Log booked slots and generated slots
+    console.log("Booked Slots:", bookedSlots);
+    console.log("Generated Slots:", timeSelect.innerHTML);
 }
 
 // Add event listener to date input
@@ -139,9 +130,9 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
         return;
     }
 
-    // Validate the selected date
-    if (!validateDate(date)) {
-        return; // Stop if the date is invalid
+    // Validate phone number
+    if (!validatePhoneNumber(phone)) {
+        return; // Stop if the phone number is invalid
     }
 
     // Create appointment data
