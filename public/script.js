@@ -68,11 +68,27 @@ async function getPublicHolidays(selectedDate) {
     const cachedHolidays = localStorage.getItem(`publicHolidays_${selectedYear}`);
 
     if (cachedHolidays) {
+        console.log(`Using cached holidays for ${selectedYear}:`, JSON.parse(cachedHolidays));
         return JSON.parse(cachedHolidays); // Use cached holidays
     } else {
-        const holidays = await fetchPublicHolidays(selectedYear);
-        localStorage.setItem(`publicHolidays_${selectedYear}`, JSON.stringify(holidays)); // Cache holidays
-        return holidays;
+        try {
+            const holidays = await fetchPublicHolidays(selectedYear);
+            console.log(`Fetched holidays for ${selectedYear}:`, holidays);
+            localStorage.setItem(`publicHolidays_${selectedYear}`, JSON.stringify(holidays)); // Cache holidays
+            return holidays;
+        } catch (error) {
+            console.error("Failed to fetch holidays. Using fallback list.");
+            const fallbackHolidays = [
+                "2025-01-01", // New Year's Day
+                "2025-01-29", // Chinese New Year
+                "2025-05-01", // Labour Day
+                "2025-06-28", // Hari Raya Aidiladha
+                "2025-08-31", // National Day
+                "2025-12-25", // Christmas Day
+                // Add more holidays as needed
+            ];
+            return fallbackHolidays;
+        }
     }
 }
 
@@ -96,9 +112,12 @@ async function validateDate(selectedDate) {
         return false;
     }
 
+    // Format the selected date as YYYY-MM-DD
+    const formattedDate = selectedDateObj.toISOString().split('T')[0];
+
     // Check if the selected date is a public holiday
     const publicHolidays = await getPublicHolidays(selectedDate);
-    if (publicHolidays.includes(selectedDate)) {
+    if (publicHolidays.includes(formattedDate)) {
         alert("Appointments are not available on public holidays. Please select another date.");
         return false;
     }
