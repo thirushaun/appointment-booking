@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000"; // Update to Heroku URL in production
+const API_URL = "http://localhost:5001"; // JSON Server URL
 
 // Password check for Admin Dashboard
 function checkPassword() {
@@ -60,8 +60,10 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
         status: "Pending"
     };
 
+    console.log("Sending appointment data:", appointmentData); // Debugging log
+
     try {
-        // Save appointment to backend
+        // Save appointment to JSON Server
         const response = await fetch(`${API_URL}/appointments`, {
             method: 'POST',
             headers: {
@@ -79,14 +81,15 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
             await sendEmail(email, patientSubject, patientText);
 
             // Send email to doctor
-            const doctorEmail = "thirushaun74@yahoo.com"; // Doctor's email
             const doctorSubject = `New Appointment - ${service}`;
             const doctorText = `You have a new appointment:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nDate: ${date}\nTime: ${time}`;
-            await sendEmail(doctorEmail, doctorSubject, doctorText);
+            await sendEmail('thirushaun74@yahoo.com', doctorSubject, doctorText); // Doctor's email
 
             // Clear the form
             document.getElementById('appointmentForm').reset();
         } else {
+            const errorData = await response.json(); // Parse error response
+            console.error("Failed to save appointment:", errorData);
             throw new Error("Failed to save appointment.");
         }
     } catch (error) {
