@@ -1,4 +1,4 @@
-const API_URL = ""; // Use relative URL for Heroku
+const API_URL = "http://localhost:5001"; // Update this to your backend URL (e.g., Heroku URL if deployed)
 
 // Fetch all appointments
 async function fetchAppointments() {
