@@ -2,13 +2,14 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 5001; // Use port 5001
+const port = process.env.PORT || 5001;
 
 // Middleware
-app.use(express.json()); // Parse JSON request bodies
-app.use(cors()); // Enable CORS for all routes
+app.use(express.json());
+app.use(cors());
+app.use(express.static('public')); // Serve static files
 
-// Configure Nodemailer for Yahoo
+// Configure Nodemailer with your credentials
 const transporter = nodemailer.createTransport({
     service: 'yahoo',
     auth: {
@@ -17,29 +18,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// In-memory storage for appointments (replace this with a database in production)
-let appointments = [
-    {
-        id: 1,
-        name: "John Doe",
-        email: "john@example.com",
-        phone: "+123456789",
-        service: "Consultation",
-        date: "2025-01-05",
-        time: "10:00 AM",
-        status: "Pending"
-    },
-    {
-        id: 2,
-        name: "Jane Smith",
-        email: "jane@example.com",
-        phone: "+987654321",
-        service: "X-Ray",
-        date: "2025-01-06",
-        time: "11:00 AM",
-        status: "Done"
-    }
-];
+// In-memory storage for appointments
+let appointments = [];
 
 // Endpoint to fetch all appointments
 app.get('/appointments', (req, res) => {
