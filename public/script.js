@@ -1,4 +1,5 @@
 const API_URL = ""; // Use relative URL for Heroku
+const CALENDARIFIC_API_KEY = "YOUR_CALENDARIFIC_API_KEY"; // Replace with your API key
 
 // Password check for Admin Dashboard
 function checkPassword() {
@@ -44,81 +45,74 @@ async function fetchBookedSlots(date) {
     }
 }
 
-// Function to validate phone number (must include country code)
-function validatePhoneNumber(phone) {
-    const phoneRegex = /^\+\d{10,15}$/; // Example: +60167051852
-    if (!phoneRegex.test(phone)) {
-        alert("Please enter a valid phone number with a country code (e.g., +60167051852).");
+// Function to fetch public holidays for Malaysia
+async function fetchPublicHolidays(year) {
+    try {
+        const response = await fetch(
+            `https://calendarific.com/api/v2/holidays?api_key=${CALENDARIFIC_API_KEY}&country=MY&year=${year}`
+        );
+        const data = await response.json();
+        if (data.response && data.response.holidays) {
+            return data.response.holidays.map(holiday => holiday.date.iso);
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching public holidays:", error);
+        return [];
+    }
+}
+
+// Function to get public holidays (fetches from API or localStorage)
+async function getPublicHolidays() {
+    const currentYear = new Date().getFullYear();
+    const cachedHolidays = localStorage.getItem(`publicHolidays_${currentYear}`);
+
+    if (cachedHolidays) {
+        return JSON.parse(cachedHolidays); // Use cached holidays
+    } else {
+        const holidays = await fetchPublicHolidays(currentYear);
+        localStorage.setItem(`publicHolidays_${currentYear}`, JSON.stringify(holidays)); // Cache holidays
+        return holidays;
+    }
+}
+
+// Function to validate the selected date (must be within the next 3 months and not a public holiday)
+async function validateDate(selectedDate) {
+    const today = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(today.getMonth() + 3);
+
+    const selectedDateObj = new Date(selectedDate);
+
+    // Check if the selected date is in the past
+    if (selectedDateObj < today) {
+        alert("Appointments cannot be booked for past dates. Please select a valid date.");
         return false;
     }
+
+    // Check if the selected date is more than 3 months ahead
+    if (selectedDateObj > threeMonthsLater) {
+        alert("For better scheduling, appointments can only be booked up to 3 months in advance. Please select a date within the next 3 months.");
+        return false;
+    }
+
+    // Check if the selected date is a public holiday
+    const publicHolidays = await getPublicHolidays();
+    if (publicHolidays.includes(selectedDate)) {
+        alert("Appointments are not available on public holidays. Please select another date.");
+        return false;
+    }
+
     return true;
 }
 
-// Function to update time slots based on selected date
-async function updateTimeSlots() {
-    const dateInput = document.getElementById('date');
-    const timeSelect = document.getElementById('time');
-
-    const selectedDate = dateInput.value;
-
-    // Validate day of the week (Monday to Saturday)
-    const dateObj = new Date(selectedDate);
-    const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
-    if (dayOfWeek === 0) { // Sunday
-        alert("Appointments are not available on Sundays. Please select another date.");
-        dateInput.value = ''; // Clear the date input
-        timeSelect.innerHTML = '<option value="">Select a valid date first</option>';
-        return;
-    }
-
-    // Fetch booked slots for the selected date
-    const bookedSlots = await fetchBookedSlots(selectedDate);
-
-    // Generate and populate time slots
-    timeSelect.innerHTML = generateTimeSlots(bookedSlots);
-
-    // Debugging: Log booked slots and generated slots
-    console.log("Booked Slots:", bookedSlots);
-    console.log("Generated Slots:", timeSelect.innerHTML);
-}
-
-// Add event listener to date input
-document.getElementById('date').addEventListener('change', updateTimeSlots);
-
-// Initialize time slots when the page loads
-window.onload = () => {
-    updateTimeSlots();
-};
-
-// Function to send emails
-async function sendEmail(to, subject, text) {
-    try {
-        const response = await fetch(`${API_URL}/send-email`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ to, subject, text })
-        });
-
-        if (response.ok) {
-            console.log('Email sent successfully');
-        } else {
-            throw new Error('Failed to send email');
-        }
-    } catch (error) {
-        console.error('Error sending email:', error);
-    }
-}
-
-// Handle form submission
+// Update the form submission logic
 document.getElementById('appointmentForm').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     // Get form values
     const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value; // Patient's email
+    const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
     const service = document.getElementById('service').value;
     const date = document.getElementById('date').value;
@@ -133,6 +127,11 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
     // Validate phone number
     if (!validatePhoneNumber(phone)) {
         return; // Stop if the phone number is invalid
+    }
+
+    // Validate the selected date
+    if (!(await validateDate(date))) {
+        return; // Stop if the date is invalid
     }
 
     // Create appointment data
@@ -186,3 +185,72 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
         alert("An error occurred. Please try again.");
     }
 });
+
+// Function to validate phone number (must include country code)
+function validatePhoneNumber(phone) {
+    const phoneRegex = /^\+\d{10,15}$/; // Example: +60167051852
+    if (!phoneRegex.test(phone)) {
+        alert("Please enter a valid phone number with a country code (e.g., +60167051852).");
+        return false;
+    }
+    return true;
+}
+
+// Function to update time slots based on selected date
+async function updateTimeSlots() {
+    const dateInput = document.getElementById('date');
+    const timeSelect = document.getElementById('time');
+
+    const selectedDate = dateInput.value;
+
+    // Validate day of the week (Monday to Saturday)
+    const dateObj = new Date(selectedDate);
+    const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+    if (dayOfWeek === 0) { // Sunday
+        alert("Appointments are not available on Sundays. Please select another date.");
+        dateInput.value = ''; // Clear the date input
+        timeSelect.innerHTML = '<option value="">Select a valid date first</option>';
+        return;
+    }
+
+    // Fetch booked slots for the selected date
+    const bookedSlots = await fetchBookedSlots(selectedDate);
+
+    // Generate and populate time slots
+    timeSelect.innerHTML = generateTimeSlots(bookedSlots);
+
+    // Debugging: Log booked slots and generated slots
+    console.log("Booked Slots:", bookedSlots);
+    console.log("Generated Slots:", timeSelect.innerHTML);
+}
+
+// Add event listener to date input
+document.getElementById('date').addEventListener('change', updateTimeSlots);
+
+// Initialize time slots when the page loads
+window.onload = () => {
+    updateTimeSlots();
+    document.getElementById('holidayMessage').textContent = "Note: Appointments are not available on public holidays.";
+};
+
+// Function to send emails
+async function sendEmail(to, subject, text) {
+    try {
+        const response = await fetch(`${API_URL}/send-email`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ to, subject, text })
+        });
+
+        if (response.ok) {
+            console.log('Email sent successfully');
+        } else {
+            throw new Error('Failed to send email');
+        }
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+}
