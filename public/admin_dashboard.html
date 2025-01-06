@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Add Font Awesome for trash icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-  
 <body>
     <div class="container">
         <h1>Admin Dashboard</h1>
@@ -19,6 +20,7 @@
             </button>
         </div>
 
+        <!-- Table -->
         <table>
             <thead>
                 <tr>
@@ -36,6 +38,20 @@
                 <!-- Appointments will be loaded here -->
             </tbody>
         </table>
+
+        <!-- Graph Section -->
+        <h2>Weekly Patient Statistics</h2>
+        <canvas id="weeklyStatsChart" width="400" height="200"></canvas>
+
+        <!-- Dropdown for Time Period -->
+        <div style="margin-top: 20px;">
+            <label for="timePeriod">Select Time Period:</label>
+            <select id="timePeriod" onchange="updateGraph()">
+                <option value="week">Weekly</option>
+                <option value="month">Monthly</option>
+                <option value="year">Yearly</option>
+            </select>
+        </div>
     </div>
 
     <!-- Load admin_dashboard.js -->
