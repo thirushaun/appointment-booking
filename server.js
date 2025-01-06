@@ -26,30 +26,18 @@ function writeAppointments(appointments) {
     fs.writeFileSync(APPOINTMENTS_FILE, JSON.stringify({ appointments }, null, 2));
 }
 
-// Helper function to validate the selected date (must be within the next 3 months)
-function validateDate(selectedDate) {
-    const today = new Date();
-    const threeMonthsLater = new Date();
-    threeMonthsLater.setMonth(today.getMonth() + 3);
-
-    const selectedDateObj = new Date(selectedDate);
-
-    // Check if the selected date is in the past
-    if (selectedDateObj < today) {
-        return { valid: false, message: "Appointments cannot be booked for past dates. Please select a valid date." };
-    }
-
-    // Check if the selected date is more than 3 months ahead
-    if (selectedDateObj > threeMonthsLater) {
-        return { valid: false, message: "For better scheduling, appointments can only be booked up to 3 months in advance. Please select a date within the next 3 months." };
-    }
-
-    return { valid: true };
-}
-
 // Endpoint to fetch all appointments
 app.get('/appointments', (req, res) => {
+    const { date } = req.query;
     const appointments = readAppointments();
+
+    if (date) {
+        // Filter appointments by date
+        const filteredAppointments = appointments.filter(app => app.date === date);
+        return res.status(200).json(filteredAppointments);
+    }
+
+    // Return all appointments if no date is provided
     res.status(200).json(appointments);
 });
 
@@ -60,12 +48,6 @@ app.post('/appointments', (req, res) => {
     // Validate request body
     if (!name || !email || !phone || !service || !date || !time) {
         return res.status(400).send('Missing required fields');
-    }
-
-    // Validate the selected date
-    const dateValidation = validateDate(date);
-    if (!dateValidation.valid) {
-        return res.status(400).send(dateValidation.message);
     }
 
     // Read existing appointments
