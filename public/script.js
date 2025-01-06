@@ -1,5 +1,5 @@
 const API_URL = ""; // Use relative URL for Heroku
-const CALENDARIFIC_API_KEY = "YOUR_CALENDARIFIC_API_KEY"; // Replace with your API key
+const CALENDARIFIC_API_KEY = "bFoaCrr86CwlD5T2pBf3GGabQFGR5NBx"; // Replace with your API key
 
 // Password check for Admin Dashboard
 function checkPassword() {
