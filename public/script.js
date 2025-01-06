@@ -1,5 +1,5 @@
 const API_URL = ""; // Use relative URL for Heroku
-const CALENDARIFIC_API_KEY = "bFoaCrr86CwlD5T2pBf3GGabQFGR5NBx"; // Replace with your API key
+const CALENDARIFIC_API_KEY = "bFoaCrr86CwlD5T2pBf3GGabQFGR5NBx"; // Your actual API key
 
 // Password check for Admin Dashboard
 function checkPassword() {
@@ -45,7 +45,7 @@ async function fetchBookedSlots(date) {
     }
 }
 
-// Function to fetch public holidays for Malaysia
+// Function to fetch public holidays for Malaysia for a specific year
 async function fetchPublicHolidays(year) {
     try {
         const response = await fetch(
@@ -62,16 +62,16 @@ async function fetchPublicHolidays(year) {
     }
 }
 
-// Function to get public holidays (fetches from API or localStorage)
-async function getPublicHolidays() {
-    const currentYear = new Date().getFullYear();
-    const cachedHolidays = localStorage.getItem(`publicHolidays_${currentYear}`);
+// Function to get public holidays for the selected year
+async function getPublicHolidays(selectedDate) {
+    const selectedYear = new Date(selectedDate).getFullYear();
+    const cachedHolidays = localStorage.getItem(`publicHolidays_${selectedYear}`);
 
     if (cachedHolidays) {
         return JSON.parse(cachedHolidays); // Use cached holidays
     } else {
-        const holidays = await fetchPublicHolidays(currentYear);
-        localStorage.setItem(`publicHolidays_${currentYear}`, JSON.stringify(holidays)); // Cache holidays
+        const holidays = await fetchPublicHolidays(selectedYear);
+        localStorage.setItem(`publicHolidays_${selectedYear}`, JSON.stringify(holidays)); // Cache holidays
         return holidays;
     }
 }
@@ -97,7 +97,7 @@ async function validateDate(selectedDate) {
     }
 
     // Check if the selected date is a public holiday
-    const publicHolidays = await getPublicHolidays();
+    const publicHolidays = await getPublicHolidays(selectedDate);
     if (publicHolidays.includes(selectedDate)) {
         alert("Appointments are not available on public holidays. Please select another date.");
         return false;
