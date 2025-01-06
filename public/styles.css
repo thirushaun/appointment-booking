@@ -37,7 +37,6 @@ input[type="text"],
 input[type="email"],
 input[type="tel"],
 input[type="date"],
-input[type="time"],
 select {
     width: 100%;
     padding: 10px;
@@ -62,6 +61,39 @@ button:hover {
     background-color: #005bb5;
 }
 
+/* Time Picker Styles */
+.time-picker-container {
+    width: 100%;
+    max-height: 150px; /* Adjust height as needed */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+#time {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    padding: 10px;
+    outline: none;
+}
+
+#time option {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+#time option:last-child {
+    border-bottom: none;
+}
+
+#time option:disabled {
+    color: #ccc; /* Gray out disabled options */
+    background-color: #f9f9f9;
+}
+
 /* Admin Dashboard Styles */
 table {
     width: 100%;
@@ -70,7 +102,7 @@ table {
 }
 
 th, td {
-    padding: 12px;
+    padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -80,43 +112,14 @@ th {
     color: white;
 }
 
-tr:hover {
-    background-color: #f1f1f1;
-}
-
 button {
-    padding: 8px 12px;
+    padding: 5px 10px;
     margin-right: 5px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
 }
 
 button:hover {
     opacity: 0.8;
-}
-
-/* Responsive Styles */
-@media (max-width: 600px) {
-    .container {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 24px;
-    }
-
-    table {
-        font-size: 14px;
-    }
-
-    th, td {
-        padding: 8px;
-    }
-
-    button {
-        padding: 6px 10px;
-        font-size: 12px;
-    }
 }
