@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
-const nodemailer = require('nodemailer'); // Add Nodemailer
+const nodemailer = require('nodemailer');
 const app = express();
 const port = process.env.PORT || 5001;
 
@@ -14,8 +14,8 @@ app.use(express.static('public'));
 const transporter = nodemailer.createTransport({
   service: 'yahoo',
   auth: {
-    user: 'thirushaun74@yahoo.com', // Your Yahoo email
-    pass: 'tnqcbjvhjvuieevs', // Your Yahoo app password
+    user: 'thirushaun74@yahoo.com',
+    pass: 'tnqcbjvhjvuieevs',
   },
 });
 
@@ -42,12 +42,10 @@ app.get('/appointments', (req, res) => {
   const appointments = readAppointments();
 
   if (date) {
-    // Filter appointments by date
     const filteredAppointments = appointments.filter(app => app.date === date);
     return res.status(200).json(filteredAppointments);
   }
 
-  // Return all appointments if no date is provided
   res.status(200).json(appointments);
 });
 
@@ -55,56 +53,79 @@ app.get('/appointments', (req, res) => {
 app.post('/appointments', (req, res) => {
   const { name, email, phone, service, date, time, status } = req.body;
 
-  // Validate request body
   if (!name || !email || !phone || !service || !date || !time) {
     return res.status(400).send('Missing required fields');
   }
 
-  // Read existing appointments
   const appointments = readAppointments();
-
-  // Check for double booking
   const isDoubleBooked = appointments.some(app => app.date === date && app.time === time);
+
   if (isDoubleBooked) {
     return res.status(400).send('This time slot is already booked.');
   }
 
-  // Create a new appointment
   const newAppointment = {
-    id: appointments.length + 1, // Generate a new ID
+    id: appointments.length + 1,
     name,
     email,
     phone,
     service,
     date,
     time,
-    status: status || "Pending", // Default status is "Pending"
+    status: status || "Pending",
   };
 
-  // Add the new appointment to the list
   appointments.push(newAppointment);
-
-  // Save the updated appointments to the file
   writeAppointments(appointments);
 
-  // Log the appointment data (for debugging)
-  console.log("New appointment added:", newAppointment);
-
-  // Send a success response
   res.status(201).json({ message: 'Appointment saved successfully', data: newAppointment });
+});
+
+// Endpoint to mark an appointment as Done
+app.patch('/appointments/:id', (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const appointments = readAppointments();
+  const appointment = appointments.find(app => app.id === parseInt(id));
+
+  if (!appointment) {
+    return res.status(404).json({ error: 'Appointment not found' });
+  }
+
+  appointment.status = status || "Done";
+  writeAppointments(appointments);
+
+  res.status(200).json({ message: 'Appointment updated successfully', data: appointment });
+});
+
+// Endpoint to delete an appointment
+app.delete('/appointments/:id', (req, res) => {
+  const { id } = req.params;
+
+  const appointments = readAppointments();
+  const appointmentIndex = appointments.findIndex(app => app.id === parseInt(id));
+
+  if (appointmentIndex === -1) {
+    return res.status(404).json({ error: 'Appointment not found' });
+  }
+
+  const deletedAppointment = appointments.splice(appointmentIndex, 1)[0];
+  writeAppointments(appointments);
+
+  res.status(200).json({ message: 'Appointment deleted successfully', data: deletedAppointment });
 });
 
 // Endpoint to send emails
 app.post('/send-email', async (req, res) => {
   const { to, subject, text } = req.body;
 
-  // Validate request body
   if (!to || !subject || !text) {
-    return res.status(400).send('Missing required fields: to, subject, text');
+    return res.status(400).json({ error: 'Missing required fields: to, subject, text' });
   }
 
   const mailOptions = {
-    from: 'thirushaun74@yahoo.com', // Your Yahoo email
+    from: 'thirushaun74@yahoo.com',
     to,
     subject,
     text,
@@ -113,10 +134,10 @@ app.post('/send-email', async (req, res) => {
   try {
     await transporter.sendMail(mailOptions);
     console.log('Email sent successfully');
-    res.status(200).send('Email sent successfully');
+    res.status(200).json({ message: 'Email sent successfully' });
   } catch (error) {
     console.error('Error sending email:', error);
-    res.status(500).send('Error sending email');
+    res.status(500).json({ error: 'Error sending email' });
   }
 });
 
