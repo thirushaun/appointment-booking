@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 const app = express();
 const port = process.env.PORT || 5001;
 
@@ -10,13 +11,31 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// Nodemailer configuration for Gmail
+// Nodemailer configuration for Gmail using OAuth2
+const OAuth2 = google.auth.OAuth2;
+
+const oauth2Client = new OAuth2(
+    '980640863174-1jitdct04ceo06820prm4bi0h544mu5j.apps.googleusercontent.com', // Your Client ID
+    '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', // Your Client Secret
+    'https://developers.google.com' // Redirect URI (without /oauthplayground)
+);
+
+oauth2Client.setCredentials({
+    refresh_token: '1//04AeCCBqtqWF0CgYIARAAGAQSNwF-L9IrKg8Kn5J7Br0j6smTJiIEL7K6j2NMKBGKHQKncjnO8MfSd1vnXrnFOknHeLijiQ4fI9' // Your Refresh Token
+});
+
+const accessToken = oauth2Client.getAccessToken();
+
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // CHANGED: Updated to use Gmail
+    service: 'gmail',
     auth: {
-        user: 'medivironaustin68@gmail.com', // CHANGED: Updated to clinic's email
-        pass: 'xorkhcxcacqgckzko' // CHANGED: Updated to clinic's password (without spaces)
-    }
+        type: 'OAuth2',
+        user: 'medivironaustin68@gmail.com', // Your Gmail address
+        clientId: '980640863174-1jitdct04ceo06820prm4bi0h544mu5j.apps.googleusercontent.com', // Your Client ID
+        clientSecret: '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', // Your Client Secret
+        refreshToken: '1//04AeCCBqtqWF0CgYIARAAGAQSNwF-L9IrKg8Kn5J7Br0j6smTJiIEL7K6j2NMKBGKHQKncjnO8MfSd1vnXrnFOknHeLijiQ4fI9', // Your Refresh Token
+        accessToken: accessToken, // Automatically generated
+    },
 });
 
 // File path for storing appointments
@@ -125,7 +144,7 @@ app.post('/send-email', async (req, res) => {
     }
 
     const mailOptions = {
-        from: 'medivironaustin68@gmail.com', // CHANGED: Updated to clinic's email
+        from: 'medivironaustin68@gmail.com', // Your Gmail address
         to,
         subject,
         text,
