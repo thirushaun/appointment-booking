@@ -12,10 +12,10 @@ app.use(express.static('public'));
 
 // Nodemailer configuration
 const transporter = nodemailer.createTransport({
-  service: 'yahoo',
+  service: 'gmail',
   auth: {
-    user: 'thirushaun74@yahoo.com',
-    pass: 'tnqcbjvhjvuieevs',
+    user: 'medivironaustin68@gmail.com',
+    pass: 'xorkhcxacqgckzko',
   },
 });
 
@@ -125,7 +125,7 @@ app.post('/send-email', async (req, res) => {
   }
 
   const mailOptions = {
-    from: 'thirushaun74@yahoo.com',
+    from: 'medivironaustin68@gmail.com',
     to,
     subject,
     text,
