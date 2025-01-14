@@ -83,6 +83,12 @@ async function updateGraph() {
                                 return `${context.label}: ${context.raw}`; // Display label and value in tooltip
                             }
                         }
+                    },
+                    datalabels: {
+                        color: 'white', // Text color for labels inside the pie chart
+                        formatter: (value) => {
+                            return value; // Display the count inside each pie section
+                        }
                     }
                 }
             }
@@ -111,6 +117,13 @@ function processAppointmentsForGraph(appointments, timePeriod) {
     });
 
     return stats;
+}
+
+// Helper function to get the week number of a date
+function getWeekNumber(date) {
+    const startOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date - startOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
 }
 
 // Mark an appointment as Done
@@ -155,11 +168,5 @@ async function deleteAppointment(id) {
     }
 }
 
-// Load appointments and update the graph when the page loads
-window.onload = () => {
-    fetchAppointments();
-    updateGraph(); // Ensure this is called
-};
-
-// Add event listener to the time period dropdown
-document.getElementById('timePeriod').addEventListener('change', updateGraph);
+// Load appointments when the page loads
+window.onload = fetchAppointments;
