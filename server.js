@@ -134,45 +134,4 @@ app.post('/appointments', (req, res) => {
 
 // Endpoint to mark an appointment as Done
 app.patch('/appointments/:id', (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    const appointments = readAppointments();
-    const appointment = appointments.find(app => app.id === parseInt(id));
-
-    if (!appointment) {
-        return res.status(404).json({ error: 'Appointment not found' });
-    }
-
-    appointment.status = status || "Done";
-    writeAppointments(appointments);
-
-    res.status(200).json({ message: 'Appointment updated successfully', data: appointment });
-});
-
-// Endpoint to delete an appointment
-app.delete('/appointments/:id', (req, res) => {
-    const { id } = req.params;
-
-    const appointments = readAppointments();
-    const appointmentIndex = appointments.findIndex(app => app.id === parseInt(id));
-
-    if (appointmentIndex === -1) {
-        return res.status(404).json({ error: 'Appointment not found' });
-    }
-
-    const deletedAppointment = appointments.splice(appointmentIndex, 1)[0];
-    writeAppointments(appointments);
-
-    res.status(200).json({ message: 'Appointment deleted successfully', data: deletedAppointment });
-});
-
-// Default route
-app.get('/', (req, res) => {
-    res.send('Welcome to the Appointment Booking API!');
-});
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+    const { id } =
