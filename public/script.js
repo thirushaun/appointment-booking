@@ -236,7 +236,7 @@ document.getElementById('appointmentForm').addEventListener('submit', async (eve
             // Send email to doctor
             const doctorSubject = `New Appointment - ${service}`;
             const doctorText = `You have a new appointment:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nDate: ${date}\nTime: ${time}`;
-            await sendEmail('thirushaun74@yahoo.com', doctorSubject, doctorText); // Doctor's email
+            await sendEmail('medivironaustin68@gmail.com', doctorSubject, doctorText); // Doctor's email
 
             // Clear the form
             document.getElementById('appointmentForm').reset();
