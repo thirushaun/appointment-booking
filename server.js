@@ -97,6 +97,38 @@ app.post('/appointments', (req, res) => {
     appointments.push(newAppointment);
     writeAppointments(appointments);
 
+    // Send email to patient
+    const patientSubject = `Appointment Confirmation - ${service}`;
+    const patientText = `Dear ${name},\n\nYour appointment for ${service} on ${date} at ${time} has been confirmed.\n\nThank you!`;
+    transporter.sendMail({
+        from: 'medivironaustin68@gmail.com',
+        to: email,
+        subject: patientSubject,
+        text: patientText,
+    }, (error, info) => {
+        if (error) {
+            console.error('Error sending email to patient:', error);
+        } else {
+            console.log('Email sent to patient:', info.response);
+        }
+    });
+
+    // Send email to clinic
+    const clinicSubject = `New Appointment - ${service}`;
+    const clinicText = `You have a new appointment:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nService: ${service}\nDate: ${date}\nTime: ${time}`;
+    transporter.sendMail({
+        from: 'medivironaustin68@gmail.com',
+        to: 'medivironaustin68@gmail.com', // Clinic's email
+        subject: clinicSubject,
+        text: clinicText,
+    }, (error, info) => {
+        if (error) {
+            console.error('Error sending email to clinic:', error);
+        } else {
+            console.log('Email sent to clinic:', info.response);
+        }
+    });
+
     res.status(201).json({ message: 'Appointment saved successfully', data: newAppointment });
 });
 
@@ -133,31 +165,6 @@ app.delete('/appointments/:id', (req, res) => {
     writeAppointments(appointments);
 
     res.status(200).json({ message: 'Appointment deleted successfully', data: deletedAppointment });
-});
-
-// Endpoint to send emails
-app.post('/send-email', async (req, res) => {
-    const { to, subject, text } = req.body;
-
-    if (!to || !subject || !text) {
-        return res.status(400).json({ error: 'Missing required fields: to, subject, text' });
-    }
-
-    const mailOptions = {
-        from: 'medivironaustin68@gmail.com', // Your Gmail address
-        to,
-        subject,
-        text,
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully');
-        res.status(200).json({ message: 'Email sent successfully' });
-    } catch (error) {
-        console.error('Error sending email:', error);
-        res.status(500).json({ error: 'Error sending email' });
-    }
 });
 
 // Default route
